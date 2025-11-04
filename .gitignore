@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+captured_data.json
+*.png
+*.md
+*.txt
+!requirements.txt
+!runtime.txt
+!Procfile
+.DS_Store
+.env

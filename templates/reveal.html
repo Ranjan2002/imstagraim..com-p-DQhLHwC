@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You've Been Phished! - Security Awareness</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 1s ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        h1 {
+            color: #e74c3c;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 18px;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+
+        .warning-box h2 {
+            color: #856404;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .warning-box p {
+            color: #856404;
+            line-height: 1.6;
+        }
+
+        .info-section {
+            margin: 30px 0;
+        }
+
+        .info-section h3 {
+            color: #2c3e50;
+            font-size: 22px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-section h3::before {
+            content: "🎯";
+            margin-right: 10px;
+        }
+
+        .red-flags {
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .red-flags li {
+            padding: 15px;
+            margin: 10px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #e74c3c;
+            transition: transform 0.2s;
+        }
+
+        .red-flags li:hover {
+            transform: translateX(5px);
+        }
+
+        .red-flags li::before {
+            content: "🚩";
+            margin-right: 10px;
+        }
+
+        .tips {
+            background: #d1ecf1;
+            border-left: 5px solid #17a2b8;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+
+        .tips h3 {
+            color: #0c5460;
+            margin-bottom: 15px;
+        }
+
+        .tips h3::before {
+            content: "💡";
+            margin-right: 10px;
+        }
+
+        .tips ul {
+            color: #0c5460;
+            line-height: 1.8;
+            margin-left: 20px;
+        }
+
+        .stats {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+            text-align: center;
+        }
+
+        .stats h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .stats p {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .cta-button {
+            display: block;
+            background: #27ae60;
+            color: white;
+            text-align: center;
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 18px;
+            margin: 30px auto 0;
+            max-width: 300px;
+            transition: background 0.3s;
+        }
+
+        .cta-button:hover {
+            background: #229954;
+            transform: scale(1.05);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="icon">🎣</div>
+            <h1>You've Been Phished!</h1>
+            <p class="subtitle">This was a cybersecurity awareness demonstration</p>
+        </div>
+
+        <div class="warning-box">
+            <h2>⚠️ What Just Happened?</h2>
+            <p>You just entered your credentials on a <strong>fake Instagram login page</strong>. In a real phishing attack, criminals would now have access to your account, personal information, and could potentially steal your identity or money.</p>
+        </div>
+
+        <div class="info-section">
+            <h3>Red Flags You Should Have Noticed</h3>
+            <ul class="red-flags">
+                <li><strong>QR Code from Unknown Source:</strong> Never scan QR codes from untrusted sources or suspicious posts</li>
+                <li><strong>Too Good to Be True:</strong> "Free prizes" and "exclusive giveaways" are common phishing lures</li>
+                <li><strong>Suspicious URL:</strong> The website URL wasn't instagram.com - always check the domain!</li>
+                <li><strong>Unsolicited Login Request:</strong> Legitimate companies rarely ask you to login via random links</li>
+                <li><strong>Sense of Urgency:</strong> Scammers create false urgency to make you act without thinking</li>
+            </ul>
+        </div>
+
+        <div class="stats">
+            <h3>📊 Phishing Statistics</h3>
+            <p><strong>90% of data breaches</strong> start with phishing attacks</p>
+            <p><strong>$5.9 billion</strong> was lost to cybercrime in 2023</p>
+            <p><strong>1 in 4 people</strong> fall for phishing scams</p>
+        </div>
+
+        <div class="tips">
+            <h3>How to Protect Yourself</h3>
+            <ul>
+                <li><strong>Verify URLs:</strong> Always check the website address before entering credentials</li>
+                <li><strong>Enable 2FA:</strong> Use two-factor authentication on all important accounts</li>
+                <li><strong>Be Skeptical:</strong> Question "too good to be true" offers and urgent requests</li>
+                <li><strong>Check for HTTPS:</strong> Look for the padlock icon in the browser (but note: phishing sites can have it too!)</li>
+                <li><strong>Don't Click Suspicious Links:</strong> Type URLs directly or use bookmarks</li>
+                <li><strong>Keep Software Updated:</strong> Regular updates patch security vulnerabilities</li>
+                <li><strong>Use Password Managers:</strong> They won't autofill on fake sites</li>
+                <li><strong>Trust Your Instincts:</strong> If something feels off, it probably is</li>
+            </ul>
+        </div>
+
+        <div class="info-section">
+            <h3>What Should You Do Now?</h3>
+            <ul class="red-flags">
+                <li><strong>If this were real:</strong> Immediately change your password and enable 2FA</li>
+                <li><strong>Monitor your accounts:</strong> Check for suspicious activity regularly</li>
+                <li><strong>Report phishing:</strong> Forward suspicious emails to your IT department or authorities</li>
+                <li><strong>Educate others:</strong> Share this knowledge with friends and family</li>
+            </ul>
+        </div>
+
+        <a href="https://www.cisa.gov/secure-our-world" target="_blank" class="cta-button">
+            Learn More About Cybersecurity
+        </a>
+
+        <div class="footer">
+            <p><strong>Remember:</strong> Your awareness is your best defense against cyber threats!</p>
+            <p style="margin-top: 10px;">This was an educational demonstration for: <br><em>"Cybersecurity and Your Money: Protecting Yourself from Online Fraud"</em></p>
+        </div>
+    </div>
+</body>
+</html>
