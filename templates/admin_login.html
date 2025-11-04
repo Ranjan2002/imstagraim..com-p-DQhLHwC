@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Instagram Phishing Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            padding: 40px;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #262626;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            font-size: 14px;
+            color: #737373;
+            line-height: 20px;
+        }
+
+        .security-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #f0f0f0;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        .security-badge svg {
+            width: 20px;
+            height: 20px;
+            fill: #667eea;
+        }
+
+        .security-badge span {
+            font-size: 13px;
+            color: #262626;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #262626;
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #dbdbdb;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #8e8e8e;
+        }
+
+        .error-message {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .login-button {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+        }
+
+        .login-footer {
+            margin-top: 24px;
+            text-align: center;
+            font-size: 12px;
+            color: #737373;
+        }
+
+        .phone-info {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            color: #262626;
+        }
+
+        .phone-info strong {
+            color: #667eea;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 20px;
+            }
+
+            .login-header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>🔐 Admin Panel</h1>
+            <p>Instagram Phishing Demo Control Panel</p>
+        </div>
+
+        <div class="security-badge">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+            </svg>
+            <span>Secure Admin Authentication</span>
+        </div>
+
+        {% if error %}
+        <div class="error-message">
+            ❌ {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('admin_login') }}">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter admin username" required autocomplete="username">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter admin password" required autocomplete="current-password">
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number (Verification)</label>
+                <input type="tel" id="phone" name="phone" placeholder="Enter verification phone number" required pattern="[0-9]{10}" maxlength="10">
+            </div>
+
+            <div class="phone-info">
+                <strong>ℹ️ Note:</strong> Enter your registered 10-digit phone number for verification
+            </div>
+
+            <button type="submit" class="login-button">Login to Admin Panel</button>
+        </form>
+
+        <div class="login-footer">
+            <p>⚠️ This is an educational demonstration tool</p>
+            <p>Unauthorized access is prohibited</p>
+        </div>
+    </div>
+
+    <script>
+        // Focus first input on load
+        document.getElementById('username').focus();
+
+        // Format phone number input
+        const phoneInput = document.getElementById('phone');
+        phoneInput.addEventListener('input', function(e) {
+            // Remove non-numeric characters
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        // Form validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const phone = phoneInput.value;
+            if (phone.length !== 10) {
+                e.preventDefault();
+                alert('Please enter a valid 10-digit phone number');
+                phoneInput.focus();
+            }
+        });
+    </script>
+</body>
+</html>

